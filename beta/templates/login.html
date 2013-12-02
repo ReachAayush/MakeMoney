@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png">
+
+  <!-- Bootstrap core CSS -->
+  <link href="../static/css/bootstrap.css" rel="stylesheet">
+  <!-- Custom styles for this template -->
+  <link href="../static/css/registration.css" rel="stylesheet">
+
+  <title>Hustle: Sign In</title>
+</head>
+
+<body>
+  <div class="container">
+    <div class="jumbotron">
+
+      <!-- Title -->
+      <h1 onclick="location.href='about'" class="text-center">Hustle</h1>
+      <p class="lead text-center">Can you <strong>Hustle</strong> your way through the Stock Market?</p>
+
+      <!-- Errors -->
+      <div class="row">
+        {% for m in messages %}
+        <div class="text-success">
+          {{m}}
+        </div>
+        {% endfor %}
+
+        {% for err in errors %}
+        <div class="text-danger"><small><strong>Error:</strong> {{err}}</small></div>
+        {% endfor %}
+      </div> <!-- /Errors -->
+
+      <div class="row">
+        <form class="form-signin" role="form" action="signin" name="login-form" method="post">
+
+          <h2 class="form-signin-heading">Sign In</h2>
+
+          <input class="form-control" type="text" name="username" placeholder="Username..." required autofocus>
+          <input class="form-control" type="password" name="pwd" placeholder="Password...">
+          <h5 id="frgt" class="text-left" onclick="location.href='forgotPassword'">Forgot Password?</h5>
+
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+          {% csrf_token %}
+
+          <button onclick="location.href='register'" class="btn btn-sm btn-block">Register</button>
+        </form>   
+      </div>
+    </div><!-- /jumbotron -->
+  </div> <!-- /container -->
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <link href="../static/js/bootstrap.js">
+  </body>
+  </html>
