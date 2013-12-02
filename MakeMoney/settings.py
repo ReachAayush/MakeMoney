@@ -2,6 +2,8 @@
 
 import os
 
+import dj_database_url
+
 # Sets the project path as a variable to be used below
 PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__)) + '/'
 APP_ROOT = os.path.abspath(os.path.join(PROJECT_ROOT, '..', 'beta/'))
@@ -16,7 +18,12 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASES = {
+isLive = os.environ.get("DATABASE_URL") != None
+ 
+if isLive:
+    DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
+else:
+    DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': PROJECT_ROOT + 'db/webapps.db',                      # Or path to database file if using sqlite3.
@@ -25,8 +32,8 @@ DATABASES = {
         'PASSWORD': '',
         'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '',                      # Set to empty string for default.
+        }
     }
-}
 LOGIN_URL = '/signin'
 LOGIN_REDIRECT_URL = '/' # Do we need this? I called it home.html
 AUTH_PROFILE_MODULE = 'beta.UserProfile'
