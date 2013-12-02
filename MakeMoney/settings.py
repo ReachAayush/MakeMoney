@@ -5,7 +5,8 @@ import os
 import dj_database_url
 
 # Sets the project path as a variable to be used below
-PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__)) + '/'
+BASE_DIR = os.path.realpath(os.path.dirname(__file__))
+PROJECT_ROOT = BASE_DIR + '/'
 APP_ROOT = os.path.abspath(os.path.join(PROJECT_ROOT, '..', 'beta/'))
 
 DEBUG = True
@@ -37,7 +38,7 @@ else:
 LOGIN_URL = '/signin'
 LOGIN_REDIRECT_URL = '/' # Do we need this? I called it home.html
 AUTH_PROFILE_MODULE = 'beta.UserProfile'
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 TIME_ZONE = 'America/Chicago'
 LANGUAGE_CODE = 'en-us'
 SITE_ID = 1
