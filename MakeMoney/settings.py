@@ -36,14 +36,14 @@ MEDIA_ROOT = APP_ROOT + '/media/'
 MEDIA_URL = '/media/'
 
 # Absolute path to the directory static files should be collected to.
-STATIC_ROOT = os.path.join(PROJECT_ROOT,'beta/static/')
+STATIC_ROOT = os.path.join(APP_ROOT,'static/')
 
 # URL prefix for static files.
 STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'beta/static'),
+    os.path.join(APP_ROOT, 'static/'),
 )
 
 # List of finder classes that know how to find static files in
