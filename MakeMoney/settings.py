@@ -19,30 +19,14 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-isLive = os.environ.get("DATABASE_URL") != None
- 
-if isLive:
-    DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
-else:
-    DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': PROJECT_ROOT + 'db/webapps.db',                      # Or path to database file if using sqlite3.
-        # The following settings are not used with sqlite3:
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
-        }
-    }
 LOGIN_URL = '/signin'
 LOGIN_REDIRECT_URL = '/' # Do we need this? I called it home.html
 AUTH_PROFILE_MODULE = 'beta.UserProfile'
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 TIME_ZONE = 'America/Chicago'
 LANGUAGE_CODE = 'en-us'
 SITE_ID = 1
-USE_I18N = True
+USE_I18N = False
 USE_L10N = True
 USE_TZ = True
 # Absolute filesystem path to the directory that will hold user-uploaded files.
