@@ -52,7 +52,7 @@ MEDIA_ROOT = APP_ROOT + '/media/'
 MEDIA_URL = '/media/'
 
 # Absolute path to the directory static files should be collected to.
-STATIC_ROOT = APP_ROOT + '/static/'
+STATIC_ROOT = os.path.join(PROJECT_ROOT,'static/')
 
 # URL prefix for static files.
 STATIC_URL = '/static/'
@@ -111,3 +111,61 @@ LOGGING = {'version': 1,
  'loggers': {'django.request': {'handlers': ['mail_admins'],
                                 'level': 'ERROR',
                                 'propagate': True}}}
+
+from django.core.exceptions import ImproperlyConfigured
+
+def get_env_variable(var_name):
+    """ Get the environment variable or return exception """
+    try:
+        return os.environ[var_name]
+    except KeyError:
+        error_msg = "Set the %s environment variable" % var_name
+        raise ImproperlyConfigured(error_msg)
+
+
+DEBUG = get_env_variable("DJANGO_DEBUG")
+if DEBUG == 1 or DEBUG == '1':
+    DEBUG = True
+else:
+    DEBUG = False
+    
+LOCAL_DEV = get_env_variable("DJANGO_LOCAL_DEV")
+if LOCAL_DEV == 1 or LOCAL_DEV == '1':
+    LOCAL_DEV = True
+else:
+    LOCAL_DEV = False
+
+if DEBUG:
+    DEBUG_TOOLBAR_PANELS = ( ...settings...   )
+    #...other DEBUG settings ....
+
+DATABASES = {}
+
+if LOCAL_DEV:
+    ALLOWED_HOSTS = ['*'] #useful when testing with DEBUG = FALSE
+    INTERNAL_IPS = ('127.0.0.1',) #sets local IPS needed for DEBUG_TOOLBAR and other items.
+
+    DATABASES = {
+        'default': {
+            
+            'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+            #'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+            'NAME': 'MakeMoney',                      # Or path to database file if using sqlite3.
+            #'NAME': '/Users/SomeUser/Documents/Django Projects/hellodjango/hellodjango.sql',                      # Or path to database file if using sqlite3.
+            # The following settings are not used with sqlite3:
+            'USER': '',
+            'PASSWORD': '',
+            'HOST': 'localhost',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+            'PORT': '',                      # Set to empty string for default.
+        }
+    }
+else:
+    # Parse database configuration from $DATABASE_URL
+    DATABASES['default'] =  dj_database_url.config()
+    
+    # Honor the 'X-Forwarded-Proto' header for request.is_secure()
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+DEFAULT_FROM_EMAIL = get_env_variable("DJANGO_EMAIL_DEFAULT_USER")
+
+SECRET_KEY = get_env_variable("DJANGO_SECRET_KEY")
