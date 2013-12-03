@@ -52,7 +52,7 @@ MEDIA_ROOT = APP_ROOT + '/media/'
 MEDIA_URL = '/media/'
 
 # Absolute path to the directory static files should be collected to.
-STATIC_ROOT = os.path.join(PROJECT_ROOT,'static/')
+STATIC_ROOT = os.path.join(PROJECT_ROOT,'beta/static/')
 
 # URL prefix for static files.
 STATIC_URL = '/static/'
@@ -159,8 +159,8 @@ else:
     # Parse database configuration from $DATABASE_URL
     DATABASES['default'] =  dj_database_url.config()
     
-    # Honor the 'X-Forwarded-Proto' header for request.is_secure()
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 DEFAULT_FROM_EMAIL = get_env_variable("DJANGO_EMAIL_DEFAULT_USER")
 
