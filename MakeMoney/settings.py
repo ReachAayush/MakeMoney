@@ -125,11 +125,7 @@ def get_env_variable(var_name):
 
 DEBUG = os.environ.get('DEBUG', False)
     
-LOCAL_DEV = get_env_variable("DJANGO_LOCAL_DEV")
-if LOCAL_DEV == 1 or LOCAL_DEV == '1':
-    LOCAL_DEV = True
-else:
-    LOCAL_DEV = False
+DJANGO_LOCAL_DEV = os.environ.get("DJANGO_LOCAL_DEV", False)
 
 DATABASES = {}
 
