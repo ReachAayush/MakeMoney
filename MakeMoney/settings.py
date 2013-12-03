@@ -123,11 +123,7 @@ def get_env_variable(var_name):
         raise ImproperlyConfigured(error_msg)
 
 
-DEBUG = get_env_variable("DJANGO_DEBUG")
-if DEBUG == 1 or DEBUG == '1':
-    DEBUG = True
-else:
-    DEBUG = False
+DEBUG = os.environ.get('DEBUG', False)
     
 LOCAL_DEV = get_env_variable("DJANGO_LOCAL_DEV")
 if LOCAL_DEV == 1 or LOCAL_DEV == '1':
