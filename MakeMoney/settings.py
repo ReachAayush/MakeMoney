@@ -135,10 +135,6 @@ if LOCAL_DEV == 1 or LOCAL_DEV == '1':
 else:
     LOCAL_DEV = False
 
-if DEBUG:
-    DEBUG_TOOLBAR_PANELS = ( ...settings...   )
-    #...other DEBUG settings ....
-
 DATABASES = {}
 
 if LOCAL_DEV:
@@ -169,3 +165,5 @@ else:
 DEFAULT_FROM_EMAIL = get_env_variable("DJANGO_EMAIL_DEFAULT_USER")
 
 SECRET_KEY = get_env_variable("DJANGO_SECRET_KEY")
+
+
