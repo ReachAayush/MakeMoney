@@ -1,1 +1,1 @@
-web: python manage.py collectstatic --noinput; gunicorn makemoney.wsgi
+web: python manage.py collectstatic --noinput; gunicorn Makemoney.wsgi
