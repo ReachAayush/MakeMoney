@@ -321,36 +321,41 @@ function updatePortfolioNetWorth() {
  */
 function addSearchResultToMarketplaceTable(data) {
     var i = MARKETPLACE_NEXT_IDX;
-    var exchange;
-    new Markit.LookUpService(data.Symbol, function(lookupData) {
-    	exchange = lookupData[0].Exchange;
-    	console.log(exchange);
-    });
+    var exchange = '';
+
     //Create our own bid/ask spread of 
     var dataBid = parseInt(data.LastPrice) - 0.50;
     var dataAsk = parseInt(data.LastPrice);
 
-    var id = MARKETPLACE_ROW_ID + i
-
+    var id = MARKETPLACE_ROW_ID + i;
+    
     var row = $("<tr class='text-center' id='" + id + "'></tr>");
     var name = $("<td title='ticker'>" + data.Symbol + "</td>");
-    var company = $("<td title='name'>" + data.Name + "</td>")
-    var stockExchange = $("<td title='exchange'>" + exchange + "</td>");
-    var bid = $("<td title='bid'>" + dataBid + "</td>");
+    var company = $("<td title='name'>" + data.Name + "</td>");
+    var exchange = $("<td title='exchange' id='exchange"+id+"'> checking... </td>");
+    var bid = $("<td title='bid' id='bid'>" + dataBid + "</td>");
     var ask = $("<td title='ask'>" + dataAsk + "</td>");
     var shares = $("<td title='quant'><input type='text' name='quant', value='10'></td>");
     var buttons = $("<td class='text-center'><button class='btn btn-success' \
       onclick='buy(\"" + id + "\")'>Buy</button></td>");
-
-    row.append(name);
+      
+ 	row.append(name);
     row.append(company);
-    row.append(stockExchange);
+    row.append(exchange);
     row.append(bid);
     row.append(ask);
     row.append(shares);
     row.append(buttons);
 
-    $(MARKETPLACE).append(row);   
+    $(MARKETPLACE).append(row);
+    
+    //insert exchange data before bid 
+    new Markit.LookUpService(data.Symbol, function(lookupData) {
+    	exchange = lookupData[0].Exchange;
+    	
+    	div = document.getElementById("exchange"+id);
+    	div.innerHTML = exchange;
+    });
 
     //increment global next_idx value
     MARKETPLACE_NEXT_IDX++;

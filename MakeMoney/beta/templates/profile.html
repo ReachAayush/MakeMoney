@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png">
 
-    <title>Hustle: Practice against the market</title>
+    <title>{{username}}</title>
 
     <!-- Bootstrap core CSS -->
     <link href="static/css/bootstrap.css" rel="stylesheet">
@@ -41,14 +41,16 @@
     </div> <!-- /navbar --> 
     
 
-    <h1 class="text-center">{{username}}'s Hustle</h1>
+    <h1 class="text-center">{{username}}</h1>
 
     <div class="container">
-      <div class="jumbotron">       
-        <div class="page-header" id="portfolio">
 
+     <!-- User Interface Window -->
+      <div class="jumbotron">
+
+        <div class="page-header" id="portfolio">
           <!-- Portfolio Table -->
-          <h2>Portfolio</h2>
+          <h2>Current Portfolio</h2>
           <table class="table table-bordered table-hover">
             <thead>
               <tr>
@@ -110,41 +112,6 @@
 
       </div>
 
-      <!-- Marketplace -->
-      <div class="page-header">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Marketplace</h3>
-          </div>
-          <div class="panel-body">
-
-            <!-- Search Bar -->
-            <div class="input-group">
-              <span class="input-group-addon">Tickr</span>
-              <input id="stockTickerQuery" type="text" class="form-control" placeholder="Enter a ticker name (like GOOG, AMZN)">
-            </div>
-
-            <!-- Marketplace Table -->
-            <table class="table table-bordered table-hover">
-              <thead>
-                <tr>
-                  <th class="text-center">Ticker</th>
-                  <th class="text-center">Company</th>
-                  <th class="text-center">Exchange</th>
-                  <th class="text-center">Bid</th>
-                  <th class="text-center">Ask</th>
-                  <th class="text-center">Quantity</th>
-                  <th class="text-center">Action</th>
-                </tr>
-              </thead>
-
-              <tbody id="marketplaceBody">
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </xdiv>
-
       <!-- Past Purchases Table -->
       <div class="page-header">
         <div class="row">
@@ -190,10 +157,14 @@
 
     </div> <!-- /container -->
     <script src="http://code.jquery.com/jquery-1.10.1.min.js" type="text/javascript"></script> 
-	<script src="static/js/d3.v3.js"></script>
-	<script src="static/js/d3.v3.min.js"></script>
+    <script src="static/js/jquery.cookie.js"></script>
+	<script src="static/js/highstock.js"></script>
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script src="static/js/MarkitTimeseriesService.js"></script>
+	<script src="static/js/MarkitQuoteService.js"></script>
+	
     <script src="static/js/portfolio.js"></script>
-    <script>
-    </script>
-  </body>
+    <script type="text/javascript">
+   </script>
+ </body>
 </html>

@@ -2,7 +2,7 @@
  * Version 1.0, Jan 2012
  */
 
-var Markit = {};
+//var Markit = {};
 /**
 * Define the QuoteService.
 * First argument is symbol (string) for the quote. Examples: AAPL, MSFT, JNJ, GOOG.
@@ -47,6 +47,7 @@ Markit.LookUpService = function(request, callback) {
 	$.ajax({
 		url: "http://dev.markitondemand.com/api/v2/Lookup/jsonp",
 		dataType: "jsonp",
+		asycn: false,
 		data: {
 			input: request
 		},

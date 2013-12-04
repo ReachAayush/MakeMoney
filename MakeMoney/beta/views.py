@@ -38,6 +38,60 @@ from django.core.serializers.json import DjangoJSONEncoder
 import random
 
 
+# --- HELPER METHODS ---
+
+# takes in a particular user as a string and returns
+# "solo" if it's a solo user
+# "student" if it's a student
+# "teacher" if it's a teacher
+# "" if it's neither
+def userType(input_str):
+  # Check if this user is, in fact a user.
+  if (User.objects.filter(username=input_str)):
+
+    classes = MyClass.objects.all()
+    teachers = map(lambda c:c.teacher_name(), classes)
+    
+    # Compares the teachers names of all classes and searches for a match
+    isTeacher = reduce(lambda b1,b2: b1 or b2 , [False] + map(lambda t: t == input_str , teachers))
+
+    if not isTeacher:
+      # get all students in the database
+      allStudents = reduce(lambda l1,l2: l1+l2, [[]] + map(lambda c:c.roster(), classes))
+
+      # check if there's a match
+      isStudent = reduce(lambda b1,b2: b1 or b2 , [False] + map(lambda s: s == input_str , allStudents))
+
+      if isStudent:
+        return "student"
+      else:
+        return "solo"
+    else:
+      return "teacher"
+  else:
+    return "" 
+
+# Depending on what kind of user logs in, we draw a different html
+# page. used so that upon login, there is no URL required. 
+@login_required
+def drawHomePage(request):
+
+  username = request.user.username
+  user_type = userType(username)
+
+  if user_type == 'solo':
+    return drawSoloPage(request)
+
+  elif user_type == 'teacher':
+    return drawTeacherPage(request)
+
+  elif user_type == 'student':
+    return drawStudentPage(request)
+
+  else:
+    # Should never get here since authentication has already happened.
+    return draw404(request)
+
 #--- LOGIN METHODS ---
 
 def myLogin(request):
@@ -52,29 +106,22 @@ def myLogin(request):
   
   #check for error
   if name is not None and pwd is not None:
+    
     #everything passed
-    print "got here"
     new_user = authenticate(username=name, password=pwd)
-    print "new_user=", new_user
+
     if new_user is not None:
       if new_user.is_active:
-        print "all classes: ", MyClass.objects.all()
-        search = MyClass.objects.filter(teacher=new_user)
-        print "search= ", search
-        if len(search) != 0:
-          curClass = search[0]
-          login(request, new_user)
-          print 'redirecting teacher login'
-          return redirect('/teacherHome')
+        user_type = userType(new_user.username)
 
         login(request, new_user)
-        print 'redirecting'
-        return redirect('/portfolio')
+
+        return redirect('/')
 
       else:
 
         # TODO: Add a check here to see if the username
-        # exists, adn if not then add a different error message
+        # exists, and if not then add a different error message
         
       	errors = []
       	context['errors'] = errors
@@ -89,6 +136,7 @@ def myLogin(request):
       return render(request, "login.html", context)
 
   else:
+    
    #unbound form
    return render(request, "login.html", context)
 #---------------------
@@ -114,6 +162,10 @@ def register(request):
     studentForm = {}
     studentForm['form'] = StudentRegistrationForm()
     studentForm['method'] = "registerStudent"
+    
+    classes = map(lambda c: c.class_name(),MyClass.objects.all())
+    studentForm['classes'] = classes
+
 
     # Registration Form for a user to be a teacher
     teacherForm = {}
@@ -195,15 +247,32 @@ def confirm_registration(request, username, token):
 #---------------------
 
 
-def teacherHome(request):
+# Draws the teacher home.
+def drawTeacherPage(request):
+  print "---entered teacherHome---"
   context = {}
+  
   username = request.user.username
-  students = MyClass.objects.filter(teacher=request.user)[0].students
+  teachersClass = MyClass.objects.get(teacher=request.user).class_name()
+
+  # TODO: Send student names over.
+  students = ["aayush", "rishabh", "tk"] # mocked.
+  
+
+  # Create the context to send
   context['username'] = username
+  context['class'] = teachersClass
   context['students'] = students
-  print "students = "
-  print students
+
+
   return render(request, 'teacherhome.html', context)
+
+
+# Draws the Student Home
+def drawStudentPage(request):
+  context = {}
+  context['username'] = request.user.username
+  return render(request, "studentHome.html", context)
 
 #-------CSV FILE -----#
 @login_required
@@ -320,21 +389,23 @@ def sell(request):
 
 #------------LOGGED IN HOME-------------------#
 @login_required
-def thePortfolio(request):
+# TODO contains some unncecessary methods
+def drawSoloPage(request):
   context = {}
 
   if len(MyClass.objects.filter(teacher=request.user)) != 0:
     print "logged in home as teacher!"
-    return render(request, 'inprogress.html', context)
+
+    # idk why this is here - redirecting to teacherHome.
+    # return render(request, 'inprogress.html', context)
+    return redirect('/teacherHome')
+
   me = getUserProfile(request.user)
 
   # Create a contextual object for data in the frontEnd
   context['username'] = request.user.username
   context['cash'] = me.portfolio.cash
   buy_list = me.portfolio.owned.all()
-  # TODO: Aayush, I also need the user's current portfolio
-  # as an array of BUYs they own, so that I can appropriately
-  # draw the same on the front end. 
   context['portfolio'] = buy_list
 
   return render(request, 'portfolio.html', context)
@@ -537,7 +608,33 @@ def confirm_resetpassword(request, username, token):
 
 
 
-# Added by Rishabh
+# ------ PROFILE PAGE -------
+
+@login_required
+def profile(request, user_id):
+  print "--entered profile"
+  context = {}
+
+  user_type = userType(user_id)
+
+  # Ensure that the inputted user_id is that of a valid user.
+  user_valid = (user_type != "")
+
+  if (user_valid):
+    context['username'] = user_id
+    return render(request, "profile.html", context)
+
+  else:
+    # Since this comes from a free-form URL, the non-existence of a user
+    # simply means that this URL does not exist at all. So, send in a 404.
+    return draw404(request)
+
+  
+# Simple "Not Found" page
+def draw404(request):
+  context = {}
+  return render(request, "notFound.html", context)
+
 
 # Simple about page.
 def about(request):

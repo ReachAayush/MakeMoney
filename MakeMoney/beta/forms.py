@@ -170,6 +170,11 @@ class StudentRegistrationForm(forms.Form):
   classname = forms.CharField(max_length = 20,
                             required = True,
                             widget = forms.TextInput(attrs={'class':'form-control', 'type':'text', 'placeholder':'Your Class Name', 'autofocus':'on'}))
+  
+  # classname = forms.ChoiceField(choices = map(lambda c: c.class_name(), MyClass.objects.all()),
+  #                               required = True)
+  #                               # widget= forms.ChoiceField(attrs={'class':'form-control'}))
+
   username = forms.CharField(max_length = 20,
                             required = True,
                             widget = forms.TextInput(attrs={'class':'form-control', 'type':'text', 'placeholder':'Username'}))

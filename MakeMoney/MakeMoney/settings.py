@@ -2,10 +2,7 @@
 
 import os
 
-import dj_database_url
-
 # Sets the project path as a variable to be used below
-BASE_DIR = os.path.realpath(os.path.dirname(__file__))
 PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__)) + '/'
 APP_ROOT = os.path.abspath(os.path.join(PROJECT_ROOT, '..', 'beta/'))
 
@@ -19,14 +16,25 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': PROJECT_ROOT + 'db/webapps.db',                      # Or path to database file if using sqlite3.
+        # The following settings are not used with sqlite3:
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'PORT': '',                      # Set to empty string for default.
+    }
+}
 LOGIN_URL = '/signin'
-LOGIN_REDIRECT_URL = '/' # Do we need this? I called it home.html
+LOGIN_REDIRECT_URL = '/'
 AUTH_PROFILE_MODULE = 'beta.UserProfile'
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 TIME_ZONE = 'America/Chicago'
 LANGUAGE_CODE = 'en-us'
 SITE_ID = 1
-USE_I18N = False
+USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 # Absolute filesystem path to the directory that will hold user-uploaded files.
@@ -36,14 +44,13 @@ MEDIA_ROOT = APP_ROOT + '/media/'
 MEDIA_URL = '/media/'
 
 # Absolute path to the directory static files should be collected to.
-STATIC_ROOT = os.path.join(APP_ROOT,'static/')
+STATIC_ROOT = APP_ROOT + '/static/'
 
 # URL prefix for static files.
 STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    #os.path.join(APP_ROOT, 'static/'),
 )
 
 # List of finder classes that know how to find static files in
@@ -85,7 +92,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ROOT_URLCONF = 'MakeMoney.urls'
 WSGI_APPLICATION = 'MakeMoney.wsgi.application'
 TEMPLATE_DIRS = '/beta/templates/'
-INSTALLED_APPS = ('django.contrib.auth', 'django.contrib.contenttypes', 'django.contrib.sessions', 'django.contrib.sites', 'django.contrib.messages', 'django.contrib.staticfiles', 'django.contrib.admin', 'beta')
+INSTALLED_APPS = ('django.contrib.auth', 'django.contrib.contenttypes', 'django.contrib.sessions', 'django.contrib.sites', 'django.contrib.messages', 'django.contrib.staticfiles', 'django.contrib.admin', 'beta', 'gunicorn')
 LOGGING = {'version': 1,
  'disable_existing_loggers': False,
  'filters': {'require_debug_false': {'()': 'django.utils.log.RequireDebugFalse'}},
@@ -95,59 +102,3 @@ LOGGING = {'version': 1,
  'loggers': {'django.request': {'handlers': ['mail_admins'],
                                 'level': 'ERROR',
                                 'propagate': True}}}
-
-from django.core.exceptions import ImproperlyConfigured
-
-def get_env_variable(var_name):
-    """ Get the environment variable or return exception """
-    try:
-        return os.environ[var_name]
-    except KeyError:
-        error_msg = "Set the %s environment variable" % var_name
-        raise ImproperlyConfigured(error_msg)
-
-
-DEBUG = get_env_variable("DJANGO_DEBUG")
-if DEBUG == 1 or DEBUG == '1':
-    DEBUG = True
-else:
-    DEBUG = False
-    
-LOCAL_DEV = get_env_variable("DJANGO_LOCAL_DEV")
-if LOCAL_DEV == 1 or LOCAL_DEV == '1':
-    LOCAL_DEV = True
-else:
-    LOCAL_DEV = False
-
-DATABASES = {}
-
-if LOCAL_DEV:
-    ALLOWED_HOSTS = ['*'] #useful when testing with DEBUG = FALSE
-    INTERNAL_IPS = ('127.0.0.1',) #sets local IPS needed for DEBUG_TOOLBAR and other items.
-
-    DATABASES = {
-        'default': {
-            
-            'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-            #'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-            'NAME': 'MakeMoney',                      # Or path to database file if using sqlite3.
-            #'NAME': '/Users/SomeUser/Documents/Django Projects/hellodjango/hellodjango.sql',                      # Or path to database file if using sqlite3.
-            # The following settings are not used with sqlite3:
-            'USER': '',
-            'PASSWORD': '',
-            'HOST': 'localhost',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-            'PORT': '',                      # Set to empty string for default.
-        }
-    }
-else:
-    # Parse database configuration from $DATABASE_URL
-    DATABASES['default'] =  dj_database_url.config()
-    
-# Honor the 'X-Forwarded-Proto' header for request.is_secure()
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-DEFAULT_FROM_EMAIL = get_env_variable("DJANGO_EMAIL_DEFAULT_USER")
-
-SECRET_KEY = get_env_variable("DJANGO_SECRET_KEY")
-
-
