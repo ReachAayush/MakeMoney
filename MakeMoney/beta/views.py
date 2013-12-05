@@ -281,7 +281,7 @@ def drawTeacherPage(request):
   context['students'] = teachersClass.roster()
   context['messages'] = teachersClass.get_log()
 
-  return render(request, 'teacherhome.html', context)
+  return render(request, 'teacherHome.html', context)
 
 # Draws the Student Home
 def drawStudentPage(request):
