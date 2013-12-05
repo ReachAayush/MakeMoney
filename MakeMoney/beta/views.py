@@ -241,11 +241,6 @@ verify your email address and complete the registration of your account:
   http://%s%s
 """ % (request.get_host(), 
        reverse('confirm', args=(new_user.username, token)))
-  
-  send_mail(subject="Verify your Hustle Account",
-              message= email_body,
-              from_email="aayusha+devnull@andrew.cmu.edu",
-              recipient_list=[new_user.email])
 
   msg.attach(email_body)
 
