@@ -10,6 +10,10 @@ from django.db import transaction
 import datetime
 import time
 
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 #needed to manually create HttpResponses or raise an Http404 exception
 from django.http import HttpResponse, Http404
 
@@ -219,6 +223,17 @@ def doRegister(request, form):
   new_user_profile.save()
   token = default_token_generator.make_token(new_user)
 
+  fromEmail = "teamhustle@salty-plains-2969.herokuapp.com"
+  toEmail = new_user.email
+
+  msg = MIMEMultipart('alternative')
+  msg['Subject'] = "Registration Confirmation"
+  msg['From'] = fromEmail
+  msg['To'] = toEmail
+
+  username = "app20076064@heroku.com"
+  password = "sbll0qgj"
+
   email_body = """
 Welcome to the Hustle.  Please click the link below to
 verify your email address and complete the registration of your account:
@@ -226,12 +241,19 @@ verify your email address and complete the registration of your account:
   http://%s%s
 """ % (request.get_host(), 
        reverse('confirm', args=(new_user.username, token)))
-
+  
   send_mail(subject="Verify your Hustle Account",
               message= email_body,
               from_email="aayusha+devnull@andrew.cmu.edu",
               recipient_list=[new_user.email])
 
+  msg.attach(email_body)
+
+  s = smtplib.SMTP('smtp.sendgrid.net', 587)
+  s.login(username, password)
+  s.sendmail(fromEmail, toEmail, msg.as_string())
+
+  s.quit()
 
 @transaction.commit_on_success
 def confirm_registration(request, username, token):
