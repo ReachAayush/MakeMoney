@@ -1,73 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png">
 
-    <title>Hustle: Practice against the market</title>
+{% extends "home-base.html" %}
 
-    <!-- Bootstrap core CSS -->
-    <link href="static/css/bootstrap.css" rel="stylesheet">
-    <link href="static/css/hustle.css" rel="stylesheet">
-    <link href="static/css/portfolio.css" rel="stylesheet">
+{% block heading %}{{username}}'s Teacher Page{% endblock %}
 
-  </head>
+{% block jumbotron %}
+<!-- Class Info -->
+<div class="page-header" id="portfolio">
+  <h2>Class Name: {{class}}</h2>
+  <h2>Students</h2>
 
-  <body>
+  {% for s in students %}
+  <a href="{{s}}">{{s}}</a>
+  {% endfor %}
+</div>
+{% endblock %}
 
-    <!-- Navbar -->
-    <div class="navbar navbar-default">
-        <div class="container">
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="portfolio">Hustle</a>
-          </div>
-          <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-              <li class="active"><a href="#">About</a></li>
-              <li><a href="#about">Settings</a></li>
-              <li><a href="resetPassword">Reset</a></li>
-              <li><a href="logOut">Log Out</a></li>
-            </ul>
-          </div>
-        </div>
-    </div> <!-- /navbar --> 
-    
+{% block outsideJumbotronInsideContainer %}
+<!-- Messaging Platform -->
+<div class="panel panel-default" id="messagingPlatform">
+  <div class="panel-heading">
+    <h3>Messaging</h3>
+  </div>
 
-    <h1 class="text-center">{{username}}'s Teacher Page</h1>
+  <div class="panel-body">
+    <h4>Send a mesage to your students:</h4>
 
-    <div class="container">
-      <div class="jumbotron">       
-        <div class="page-header" id="portfolio">
+    <div class="input-group">
+      <span class="input-group-addon">{{username}}:</span>
+      <input id="messageInput" type="text" class="form-control" placeholder="Enter your message here...">
+    </div>
 
-          <h2>Class Name: {{class}}</h2>
+    <br/>
 
-          <h2>Students</h2>
+    <!-- Message Log -->
+    <h4>Message Log:</h4>
+    <table class="table" id="messageLog">
+      {% for m in messages %}
+      <tr>
+        <td>{{m.date}}</td>
+        <td>{{m.from}}</td>
+        <td>{{m.message}}</td>
+      </tr>
+      {% endfor %} 
+    </table>
 
-          {% for s in students %}
-
-          <a href="{{s}}">{{s}}</a>
-
-          {% endfor %}
-        </div>
-
-      </div>
-    </div> <!-- /container -->
-
-  <!-- Scripts -->
-  <script src="http://code.jquery.com/jquery-1.10.1.min.js" type="text/javascript"></script> 
-	<script src="static/js/d3.v3.js"></script>
-	<script src="static/js/d3.v3.min.js"></script>
-    <script src="static/js/portfolio.js"></script>
-    <script>
-    </script>
-  </body>
-</html>
+  </div>
+</div> <!-- /Messaging Platform -->
+{% endblock %}

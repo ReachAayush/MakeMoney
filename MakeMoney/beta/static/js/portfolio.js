@@ -14,6 +14,8 @@ page, which is the barebones for any Hustler (Hustle User).
 /* -- GLOBAL VARS -- 
  * all external dependencies in terms of IDs, headers, etc. 
  */
+/* -- NavBar --*/
+var SEARCH_USR_INPUT = "#searchProfile";
 
 /* -- Graph -- */
 var STOCK_GRAPH_USR_INPUT = "#stockTickerQueryGraphInput";
@@ -21,6 +23,8 @@ var CANDLESTICK_GRAPH = "#stockTickerQueryGraph1";
 var CANDLESTICK_GRAPH_BTN = "#stockTickerQueryGraphInput1";
 var AREA_GRAPH = "#stockTickerQueryGraph2";
 var AREA_GRAPH_BTN = "#stockTickerQueryGraphInput2";
+var COMPARE_GRAPH = "#stockTickerQueryGraph3";
+var COMPARE_GRAPH_BTN = "#stockTickerQueryGraphInput3";
 
 var GRAPH_LOADING = "#graph-loading";
 
@@ -38,11 +42,16 @@ var MARKETPLACE_ROW_ID = "marketplace-row"
 
 var CASH_ON_HAND = "#cashOnHand";
 
+/* -- MESSAGING --*/
+var MESSAGE_USR_INPUT = "#messageInput";
+var MESSAGE_LOG = "#messageLog";
+
 /* -- BACKEND URLs -- */
-var BUY_STOCK = "buy"
-var SELL_STOCK = "sell"
+var BUY_STOCK_URL = "buy"
+var SELL_STOCK_URL = "sell"
 
 /* -- GLOBAL FUNCTIONS -- */
+var PORTFOLIO_TICKERS = [];
 
 /* returns true if "Enter" key was pressed */
 var ENTER_PRESSED = function(e) {return e.keyCode == 13};
@@ -68,6 +77,7 @@ function drawStockHistGraph(tckr) {
   //show/hide diff chart divs
   $(CANDLESTICK_GRAPH).show();
   $(AREA_GRAPH).hide();
+  $(COMPARE_GRAPH).hide();
   $(CANDLESTICK_GRAPH_BTN).focus();
   
   //call interactive chart api. 7304 represents 20years of stock data in days.
@@ -135,7 +145,7 @@ function buy(rowID) {
 
   // send this JSON object to the backend for db mgmt
   $.ajax({
-    url: BUY_STOCK,
+    url: BUY_STOCK_URL,
 
     data:backendObj, 
 
@@ -150,7 +160,8 @@ function buy(rowID) {
         port_row_id_hdr + "'></tr>");
       
       //Create Objects
-      var tckr = $("<td class='text-center'>" + backendObj['ticker'] + "</td>");
+      var tckr = $("<td class='text-center' id='" + port_row_id_hdr + "-ticker'>" 
+      				+ backendObj['ticker'] + "</td>");
       var name = $("<td class='text-center'>" + backendObj['name'] + "</td>");
       var date = $("<td class='text-center'>" +
        data['date'] + "</td>"); // Date of Purchase
@@ -174,7 +185,7 @@ function buy(rowID) {
       //button
       var sellBtn = $("<td class='text-center'><button class='btn btn-default' \
         onclick=\"sell(" + portSize + ")\">Sell</button></td>");
-
+		
       //append
       row.append(tckr);
       row.append(name);
@@ -210,16 +221,17 @@ function sell(idx) {
 
   var soldAt = $(portfolio_row_id_hdr + idx + "-currentBid").html();
   var quant = $(portfolio_row_id_hdr + idx + "-quantity").html();
+  var ticker = $(portfolio_row_id_hdr + idx + "-ticker").html();
   var cashOnHand = $(CASH_ON_HAND).html()
 
   var backendObj = {}
   backendObj['index'] = idx;
   backendObj['soldAt'] = soldAt;
-
+  backendObj['ticker'] = ticker;
 
   //send the index of the row selected to the backend for removal
   $.ajax({
-    url: SELL_STOCK,
+    url: SELL_STOCK_URL,
     data:backendObj,
     success: function(data) {
       // update cashOnHand
@@ -229,7 +241,7 @@ function sell(idx) {
       // TODO maybe we could add like a fade out?
 
       $("#" + PORTFOLIO_ROW_HDR + idx).remove();
-
+	  
       // update all rows in the table
       reorderPortfolioRows();      
     },
@@ -257,6 +269,8 @@ function updatePortfolioVal(idx){
 
   $(portfolio_row_id_hdr + idx + "-value").html(value);
   $(portfolio_row_id_hdr + idx + "-netPayoff").html(netPayoff);
+  
+  console.log("hidden field val " + $("#currPortfolio").val());
 }
 
 /* Reorders ID values of the porfolio table for all current objects
@@ -264,7 +278,6 @@ function updatePortfolioVal(idx){
  */
 function reorderPortfolioRows(){
   var rows = $(PORTFOLIO_ROWS);
-
   $.each(rows, function(i, row) {
 
     var new_row_id = PORTFOLIO_ROW_HDR + i;
@@ -384,19 +397,75 @@ function makeStockQuoteCall(tckr, ajax_success, ajax_err) {
 			return;
 		}
 	
-		//Quote data is jsonResult. Key: Name, Symbol, LastPrice,
-		//Change, ChangePercent, Timestamp, MSDate, MarketCap, Volume,
-		//ChangeYTD, ChangePercentYTD, High, Low, Open
+		/* Quote data is jsonResult. Key: Name, Symbol, LastPrice,
+		 * Change, ChangePercent, Timestamp, MSDate, MarketCap, Volume,
+		 * ChangeYTD, ChangePercentYTD, High, Low, Open 
+     */
 		ajax_success(data);
   });
 }
 
+/* --------- MESSAGING METHODS ----------- */
+$(MESSAGE_USR_INPUT).keyup(function(e){
+  if(ENTER_PRESSED(e)) {
+
+    var msg = $(MESSAGE_USR_INPUT).val();
+
+    // Create the arg object
+    var argObj = {};
+    argObj['message'] = msg;
+
+    $.ajax({
+      url: 'addMessage',
+
+      data: argObj,
+
+      success: function(data) {
+        // message is stored in the db, so add it here.
+        console.log("--entered success function!");
+
+        // value of rows is also the next index, so add to that point
+        var new_row = $("<tr></tr>");
+        var timestamp = $("<td>" + data['timestamp'] + "</td>");
+        var from = $("<td>" + data['from'] + "</td>");
+        var message = $("<td>" + msg + "</td>");
+
+        // append
+        new_row.append(timestamp);
+        new_row.append(from);
+        new_row.append(message);
+
+        $(MESSAGE_LOG).append(new_row);
+
+        // clear the input field
+        $(MESSAGE_USR_INPUT).val("");
+
+
+      },
+
+      error: function(data) {
+        console.log("something went wrong while implementing message sending");
+      }
+
+      });
+  }
+});
 
 
 
 /* ------------ TOP-LEVEL METHODS --------------- */
 
 /* ------ CLICK HANDLERS ------ */
+
+/* --- NAVBAR --- */
+$(SEARCH_USR_INPUT).keyup(function (e){
+  if(ENTER_PRESSED(e)) {
+    var v = $(SEARCH_USR_INPUT).val();
+
+    // go to this page
+    window.location.href=v;
+  }
+});
 
 /* --- GRAPH --- */
 $(STOCK_GRAPH_USR_INPUT).keyup(function(e){
@@ -417,14 +486,22 @@ $(STOCK_GRAPH_USR_INPUT).blur(function() {
 //handle button toggles for charts
 $(CANDLESTICK_GRAPH_BTN).on("click", function() {
   $(AREA_GRAPH).hide();
+  $(COMPARE_GRAPH).hide();
   $(CANDLESTICK_GRAPH).show();
   $(CANDLESTICK_GRAPH_BTN).focus();
 });
 
 $(AREA_GRAPH_BTN).on("click", function() {
   $(CANDLESTICK_GRAPH).hide();
+  $(COMPARE_GRAPH).hide();
   $(AREA_GRAPH).show();
   $(AREA_GRAPH_BTN).focus();
+});
+$(COMPARE_GRAPH_BTN).on("click", function() {
+  $(CANDLESTICK_GRAPH).hide();
+  $(AREA_GRAPH).hide();
+  $(COMPARE_GRAPH).show();
+  $(COMPARE_GRAPH_BTN).focus();
 });
 
 /* --- MARKETPLACE --- */
@@ -440,25 +517,8 @@ $(MARKETPLACE_USR_INPUT).blur(function() { $(this).val(''); });
 
 /* ------ DOCUMENT.READY ------ */
 $(document).ready(function(){
-
     // Calls refresh method on page load and every 5 seconds.
     refresh();
     setInterval(refresh, 5000);  
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

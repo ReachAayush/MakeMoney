@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from PIL import Image
 
-# Person
+# Solo User
 class UserProfile(models.Model):
     user = models.ForeignKey(User)
     portfolio = models.OneToOneField("Portfolio")
@@ -14,12 +14,35 @@ class UserProfile(models.Model):
 
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
 
+# Student
+class Student(models.Model):
+    user = models.ForeignKey(User)
+    portfolio = models.OneToOneField("Portfolio")
+    classAttending = models.OneToOneField("MyClass")
+
+    def __unicode__(self):
+        return self.user.username
+
+
+# Messaging for Class
+class Message(models.Model):
+    messageFrom = models.ForeignKey(User)
+
+    # Used a charfield here for formatting purposes. The items
+    # are added to the log in chronological order anyway.
+    time = models.CharField(max_length=200)
+    message = models.CharField(max_length=500)
+
+    def __unicode__(self):
+        return self.message
+
 # Class
 class MyClass(models.Model):
     className = models.CharField(max_length=50)
     teacher = models.ForeignKey(User)
-    students = models.ManyToManyField("UserProfile")
+    students = models.ManyToManyField("Student")
     startingCashValue = models.IntegerField(default=100000)
+    messageLog = models.ManyToManyField("Message")
 
     # returns a list of student names in the class
     def roster(self):
@@ -34,8 +57,23 @@ class MyClass(models.Model):
     def teacher_name(self):
         return self.teacher.username
 
+    def get_log(self):
+        allMsgObjs = list(self.messageLog.all())
+
+        # given a msg, converts to JSON
+        def msg_json(m):
+            ans = {}
+
+            ans['from'] = m.messageFrom
+            ans['date'] = m.time
+            ans['message'] = m.message
+
+            return ans
+
+        return map(msg_json, allMsgObjs)
+
     def __unicode__(self):
-        return "Class: " + self.className + ", teacher = " + self.teacher.username
+        return "Class: " + self.className + ", Teacher: " + self.teacher.username
 
 # Portfolio of a given User
 class Portfolio(models.Model):

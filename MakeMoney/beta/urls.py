@@ -18,6 +18,7 @@ urlpatterns = patterns('',
 	url(r'^buy', 'beta.views.buy'),
 	url(r'^sell', 'beta.views.sell'),
 	url(r'^graph', 'beta.views.graph'),
+	url(r'^addMessage', 'beta.views.addMessage'),
 
 	# Class URLs
 	url(r'^registerClass$', 'beta.views.registerClass', name='registerClass'),
@@ -29,9 +30,6 @@ urlpatterns = patterns('',
 	# Pending Deprication
 	url(r'^$', 'beta.views.drawHomePage', name='home'),
 
-	# Page URLs
-	# url(r'^portfolio$', 'beta.views.thePortfolio'),
-	# url(r'^teacherHome$', 'beta.views.drawTeacherPage'),
-	# url(r'^studentHome$', 'beta.views.drawStudentPage'),
+	# Profile - note this accepts any url pattern
 	url(r'^(?P<user_id>[a-zA-Z0-9_@\+\-]+)$', 'beta.views.profile', name='profile'),
 )

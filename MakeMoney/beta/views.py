@@ -1,10 +1,13 @@
 #views.py
 
+# TODO: Fix instances of getUserProfile method
+
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
+import datetime
 import time
 
 #needed to manually create HttpResponses or raise an Http404 exception
@@ -136,7 +139,7 @@ def myLogin(request):
       return render(request, "login.html", context)
 
   else:
-    
+
    #unbound form
    return render(request, "login.html", context)
 #---------------------
@@ -205,7 +208,6 @@ def doRegister(request, form):
   uName=form.cleaned_data['username'] 
   pwd=form.cleaned_data['password1']
   ema=form.cleaned_data['email']
-  #default_cash = form.cleaned_data['cash']
   default_cash = 100000
   new_user = User.objects.create_user(username=uName, password=pwd, email=ema)
 
@@ -234,6 +236,7 @@ verify your email address and complete the registration of your account:
 @transaction.commit_on_success
 def confirm_registration(request, username, token):
     user = get_object_or_404(User, username=username)
+    
     # Send 404 error if token is invalid
     if not default_token_generator.check_token(user, token):
         raise Http404
@@ -249,35 +252,39 @@ def confirm_registration(request, username, token):
 
 # Draws the teacher home.
 def drawTeacherPage(request):
-  print "---entered teacherHome---"
   context = {}
   
+  # Get necessary info
   username = request.user.username
-  teachersClass = MyClass.objects.get(teacher=request.user).class_name()
-
-  # TODO: Send student names over.
-  students = ["aayush", "rishabh", "tk"] # mocked.
-  
+  teachersClass = MyClass.objects.get(teacher=request.user)
 
   # Create the context to send
   context['username'] = username
-  context['class'] = teachersClass
-  context['students'] = students
-
+  context['class'] = teachersClass.class_name()
+  context['students'] = teachersClass.roster()
+  context['messages'] = teachersClass.get_log()
 
   return render(request, 'teacherhome.html', context)
-
 
 # Draws the Student Home
 def drawStudentPage(request):
   context = {}
+
+  student = request.user
+  studentModel = Student.objects.get(user=student)
+  studentClass = studentModel.classAttending 
+  messages = studentClass.get_log() 
+
   context['username'] = request.user.username
+  context['class'] = studentClass
+  context['messages'] = messages
+
+
   return render(request, "studentHome.html", context)
 
 #-------CSV FILE -----#
 @login_required
 def tablecsv(request):
-  print 'hereee'
   return render(request, '/table.csv')
 
   #--------GRAPH------#
@@ -302,14 +309,26 @@ def graph(request):
     #context['hist'] = hist
     #context['news'] = news
 
-  return render(request, 'portfolio.html', context)
+  return render(request, 'soloHome.html', context)
 
   #----------BUY------------#
 @login_required
 def buy(request):
   me = request.user;
   now = time.strftime("%m/%d/%Y")
-  myProfile = getUserProfile(me);
+
+  print "--"
+  print "buy | now = ", now
+  print "--"
+
+  # myProfile = getUserProfile(me)
+  user_type = userType(me.username)
+
+  if user_type == "solo":
+    myProfile = getUserProfile(me)
+  else: #if not solo then def student
+    myProfile = Student.objects.get(user=me)
+
   stock = request.GET['ticker']
 
   nm = request.GET['name']
@@ -324,16 +343,14 @@ def buy(request):
    date=now, boughtAt=price, \
    quantity=quant, user=me)
   new_buy.save()
+  
   myProfile.portfolio.owned.add(new_buy)
+  
   cash = int(myProfile.portfolio.cash)
   finalCash = cash - cost
+  
   myProfile.portfolio.cash = finalCash
   myProfile.portfolio.save()
-  print "Bought " + str(quant) + " stock(s) of " + stock + \
-  " at the price of " + str(price)
-  print "cost     =", cost
-  print "cash_old =", cash
-  print "cash_new =", myProfile.portfolio.cash
 
   # create a JSON object to return to the frontEnd
   context = {}
@@ -349,17 +366,21 @@ def buy(request):
 def sell(request):
   me = request.user;
   now = time.strftime("%m/%d/%Y")
-  myProfile = getUserProfile(me);
+  # myProfile = getUserProfile(me);
+  user_type = userType(me.username)
+
+  if user_type == "solo":
+    myProfile = getUserProfile(me)
+  else: #if not solo then def student
+    myProfile = Student.objects.get(user=me)
 
   buyId = int(request.GET['index'])
   price = float(request.GET['soldAt'])
-  print "price = ", price
 
   buy = myProfile.portfolio.owned.all()[buyId]
   stock = buy.tickerSymbol
   nm = buy.companyName
   quant = buy.quantity
-
 
   new_buy = Sell(tickerSymbol=stock,
    date=now, soldAt=price, \
@@ -373,11 +394,6 @@ def sell(request):
   finalCash = cash + cost
   myProfile.portfolio.cash = finalCash
   myProfile.portfolio.save()
-  print "Sold " + str(quant) + " stock(s) of " + stock + \
-  " at the price of " + str(price)
-  print "cost     =", cost
-  print "cash_old =", cash
-  print "cash_new =", myProfile.portfolio.cash
 
   # create a JSON object to return to the frontEnd
   context = {}
@@ -398,7 +414,7 @@ def drawSoloPage(request):
 
     # idk why this is here - redirecting to teacherHome.
     # return render(request, 'inprogress.html', context)
-    return redirect('/teacherHome')
+    return redirect('/')
 
   me = getUserProfile(request.user)
 
@@ -408,7 +424,7 @@ def drawSoloPage(request):
   buy_list = me.portfolio.owned.all()
   context['portfolio'] = buy_list
 
-  return render(request, 'portfolio.html', context)
+  return render(request, 'soloHome.html', context)
 
 #---------------------------------------------#
 
@@ -421,26 +437,11 @@ def getUserProfile(usr):
 
 #----------teacher reg------------------------#
 def registerClass(request):
-
-  print "----registerClass----"
-
   context = {}
-  
-  # Don't really need this since we're going to login.html
-
-  # forms = {}
-
-  # # Registration Form for a user to be a teacher
-  # teacherForm = {}
-  # teacherForm['form'] = ClassRegistrationForm()
-  # teacherForm['method'] = "registerClass"
-
-  # # Add all these forms to a generic form key
-  # forms['teacher'] = teacherForm
  
-  # form = ClassRegistrationForm(request.POST)
-  # context['registrationForm'] = form
- 
+  if request.method == "GET":
+    return redirect("/register")
+
   form = ClassRegistrationForm(request.POST)
 
   #check for error
@@ -467,8 +468,10 @@ def doRegisterClass(request, form):
   ema=form.cleaned_data['email']
   scv=int(form.cleaned_data['cashValue'])
 
+
   new_user = User.objects.create_user(username=uName, password=pwd, email=ema)
   new_user.save()
+  
   new_class = MyClass(className=cName, teacher=new_user, startingCashValue=scv)
   new_class.save()
 
@@ -520,12 +523,16 @@ def doRegisterStudent(request, form):
 
   new_user = User.objects.create_user(username=uName, password=pwd, email=ema)
   new_user.save()
+
   my_class = MyClass.objects.filter(className=cName)[0]
+
   portf = Portfolio(cash=my_class.startingCashValue)
   portf.save()
-  new_user_profile = UserProfile(user=new_user, portfolio=portf)
-  new_user_profile.save()
-  my_class.students.add(new_user_profile)
+
+  new_student_model = Student(user=new_user, portfolio=portf, classAttending=my_class)
+  new_student_model.save()
+
+  my_class.students.add(new_student_model)
   my_class.save()
 
   token = default_token_generator.make_token(new_user)
@@ -558,7 +565,7 @@ def resetPassword(request):
 		return render(request, 'resetPassword.html', context)
 	else:
 		form = ResetPasswordForm(request.POST, request.FILES)
-		me = getUserProfile(request.user)
+		me = getUserProfile(request.user) # FIXME
 		if form.is_valid():
 			oldPass = form.cleaned_data.get('oldPassword')
 			newPass = form.cleaned_data.get('password1')
@@ -566,7 +573,7 @@ def resetPassword(request):
 				me.user.set_password(newPass)
 				me.is_active = True
 				me.user.save()
-			return redirect('/portfolio')
+			return redirect('/')
 		return redirect('resetPassword')
 
 def forgotPassword(request):
@@ -612,7 +619,6 @@ def confirm_resetpassword(request, username, token):
 
 @login_required
 def profile(request, user_id):
-  print "--entered profile"
   context = {}
 
   user_type = userType(user_id)
@@ -639,6 +645,47 @@ def draw404(request):
 # Simple about page.
 def about(request):
   return render(request, "about.html", {})
+
+# ------ ADD MESSAGE -------
+def addMessage(request):
+  print "--entered addMessage!"
+  context = {}
+
+  # get Class name where this message should be added
+  user_type = userType(request.user.username)
+
+  if user_type == "teacher":
+    myClass = MyClass.objects.get(teacher=request.user)
+  else:
+    # if not a teacher, then definitely a student
+    myClass = Student.objects.get(user=request.user).classAttending
+
+  # construct params for message
+  me = request.user
+  message = request.GET['message']
+  now = time.strftime("%m/%d/%Y | %I:%M:%S %p")
+
+  new_message = Message(messageFrom=me, time=now, message=message)
+  new_message.save()
+
+  print "message saved!"
+
+  myClass.messageLog.add(new_message)
+  myClass.save()
+
+  print "myClass saved!"
+
+  # Prepare data to send back
+  context['timestamp'] = now
+  context['from'] = request.user.username
+
+  data =  json.dumps(context, cls=DjangoJSONEncoder)
+  return HttpResponse(data, mimetype="application/json", status=200)
+
+
+
+
+
 
 
 

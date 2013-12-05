@@ -2,7 +2,6 @@
  * Version 1.0, Jan 2012
  */
 
-//var Markit = {};
 /**
 * Define the QuoteService.
 * First argument is symbol (string) for the quote. Examples: AAPL, MSFT, JNJ, GOOG.
