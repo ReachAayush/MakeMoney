@@ -15,7 +15,6 @@
         <th class="text-center">Current Bid</th>
         <th class="text-center">Value</th>
         <th class="text-center">Net Payoff</th>
-        <th class="text-center">Action</th>
       </tr>
     </thead>
     <tbody id="portfolioBody">
@@ -37,9 +36,6 @@
                 <td class="text-center" id="portfolio-row{{forloop.counter0}}-currentBid">0</td>
                 <td class="text-center" id="portfolio-row{{forloop.counter0}}-value"></td>
                 <td class="text-center" id="portfolio-row{{forloop.counter0}}-netPayoff"></td>
-                <td class="text-center">
-                  <button class='btn btn-default' onclick="sell({{forloop.counter0}})">Sell</button>
-                </td>
               </tr>
               {% endfor %}
             </tbody>

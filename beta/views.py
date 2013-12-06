@@ -645,10 +645,16 @@ def soloProfile(request, user_id):
   context = {}
   user = User.objects.get(username=user_id)
   user_profile = UserProfile.objects.get(user=user)
-  history = user_profile.portfolio.history.all()
+  portfolio = user_profile.portfolio
+  buy_list = portfolio.owned.all()
+  history = portfolio.history.all()
+  cash = portfolio.cash
+
 
   context['username'] = user_id
+  context['portfolio'] = buy_list
   context['pastPurchases'] = history
+  context['cash'] = cash
 
   return render(request, "soloProfile.html", context)
 
