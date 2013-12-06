@@ -121,3 +121,5 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+
+DATABASES['default'] = dj_database_url.config(default=os.environ.get('DATABASE_URL'))
