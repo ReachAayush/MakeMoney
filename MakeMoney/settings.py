@@ -6,7 +6,7 @@ import os
 PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__)) + '/'
 APP_ROOT = os.path.abspath(os.path.join(PROJECT_ROOT, '..', 'beta/'))
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -80,7 +80,7 @@ MIDDLEWARE_CLASSES = (
 
 # Configures Django to merely print emails rather than sending them.
 # Comment out this line to enable real email-sending.
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # To enable real email-sending, you should uncomment and 
 # configure the settings below.
