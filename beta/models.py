@@ -2,7 +2,7 @@ from django.db import models
 import datetime
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
-from PIL import Image
+#from PIL import Image
 
 # Solo User
 class UserProfile(models.Model):
