@@ -595,11 +595,14 @@ def drawStudentPage(request):
   student = request.user
   studentModel = Student.objects.get(user=student)
   studentClass = studentModel.classAttending 
+  portfolio = studentModel.portfolio
   messages = studentClass.get_log() 
 
   context['username'] = request.user.username
   context['class'] = studentClass
+  context['portfolio'] = portfolio.owned.all()
   context['messages'] = messages
+
 
   return render(request, "studentHome.html", context)
 
