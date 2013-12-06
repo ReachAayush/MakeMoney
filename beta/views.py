@@ -241,13 +241,22 @@ def resetPassword(request):
 
 # handles Forgot Password Method
 def forgotPassword(request):
+  context = {}
+  messages = []
+  context['messages'] = messages
+  errors = []
+  context['errors'] = errors
+
   if request.method == 'GET':
-    context = {}
+    errors.append("This email address does not exist")
     return render(request, 'forgotPassword.html', context)
+
   else:
     myEmail = request.POST['email']
-    me = User.objects.filter(email=myEmail)[0]
-    user = me
+    me = User.objects.filter(email__exact=myEmail)
+    if not me:
+      return redirect('forgotPassword')
+    user = me[0]
     token = default_token_generator.make_token(user)
     newPass = str(random.randrange(1000, 9999, 1))
     me.set_password(newPass)
@@ -265,9 +274,12 @@ verify your email address and complete the registration of your account:
               message= email_body,
               from_email="WallStreetCoders@myhustle.herokuapp.com",
               recipient_list=[user.email])
-    context = {}
+    
+    
     context['email'] = myEmail
-    return render(request, 'needs-confirmation.html', context)
+    messages.append("An email with your new password has been sent to you.")
+
+    return render(request, 'forgotPassword.html', context)
 
 # Confirms Password Reset
 @transaction.commit_on_success
