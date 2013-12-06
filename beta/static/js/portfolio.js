@@ -62,9 +62,6 @@ var ENTER_PRESSED = function(e) {return e.keyCode == 13};
 
 /* Writes "Loading" near the graph when the graph is loading */
 function graphLoading(b) {
-
-  console.log("woo ", b);
-
   if (b === true) {
     $(GRAPH_LOADING).html("Loading...");
   } else {
@@ -142,6 +139,12 @@ function buy(rowID) {
     backendObj[obj.title] = obj.textContent;
   }
   });
+
+  // negative values are not allowed, so just throw an alert then.
+  if ((backendObj['quant']) < 0) {
+    alert("You cannot buy a negative number of stocks.");
+    return;
+  }
 
   // send this JSON object to the backend for db mgmt
   $.ajax({
@@ -243,7 +246,8 @@ function sell(idx) {
       $("#" + PORTFOLIO_ROW_HDR + idx).remove();
 	  
       // update all rows in the table
-      reorderPortfolioRows();      
+      reorderPortfolioRows();    
+      updatePortfolioNetWorth();  
     },
 
     error: function(data) {
@@ -348,9 +352,11 @@ function addSearchResultToMarketplaceTable(data) {
     var exchange = $("<td title='exchange' id='exchange"+id+"'> checking... </td>");
     var bid = $("<td title='bid' id='bid'>" + dataBid + "</td>");
     var ask = $("<td title='ask'>" + dataAsk + "</td>");
-    var shares = $("<td title='quant'><input type='text' name='quant', value='10'></td>");
-    var buttons = $("<td class='text-center'><button class='btn btn-success' \
+    // var shares = $("<td title='quant'><input type='text' class='marketplaceResultQuant' name='quant', value='10'></td>");
+    var shares = $("<td title='quant'><input type='text' class='marketplaceResultQuant' name='quant', value='10'></td>");
+    var buyBtn = $("<td class='text-center'><button class='btn btn-success' \
       onclick='buy(\"" + id + "\")'>Buy</button></td>");
+    var closeBtn = $("<td class='text-center'><button type='button' class='close' aria-hidden='true'>&times;</button></td>");
       
  	row.append(name);
     row.append(company);
@@ -358,7 +364,8 @@ function addSearchResultToMarketplaceTable(data) {
     row.append(bid);
     row.append(ask);
     row.append(shares);
-    row.append(buttons);
+    row.append(buyBtn);
+    row.append(closeBtn);
 
     $(MARKETPLACE).append(row);
     
@@ -381,9 +388,9 @@ function addSearchResultToMarketplaceTable(data) {
  * Run this method if performing the API Call resulted in an error.
  */
 function addSearchInstanceToMarketplaceErrHandler(e) {
+  alert("No such ticker symbol.");
   console.log("--- ERR LOG (trying to access YAHOO API) ---");
   console.log(e);
-  alert("Unfortunately, we can't process your request at this time. Please try again later.");
 }
 
 /* API CALL - 
@@ -395,8 +402,7 @@ function makeStockQuoteCall(tckr, ajax_success, ajax_err) {
 		//Catch errors
 		if (!data || data.Message){
 			console.error("Error: ", data.Message);
-			alert("No such ticker symbol.");
-			alert(ajax_err);
+			ajax_err();
 			return;
 		}
 	
@@ -522,6 +528,7 @@ $(MARKETPLACE_USR_INPUT).blur(function() { $(this).val(''); });
 $(document).ready(function(){
     // Calls refresh method on page load and every 5 seconds.
     refresh();
+    updatePortfolioNetWorth();
     setInterval(refresh, 5000);  
 });
 
