@@ -6,7 +6,7 @@ import os
 PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__)) + '/'
 APP_ROOT = os.path.abspath(os.path.join(PROJECT_ROOT, '..', 'beta/'))
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
