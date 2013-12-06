@@ -585,7 +585,7 @@ def drawTeacherPage(request):
   context['students'] = teachersClass.roster()
   context['messages'] = teachersClass.get_log()
 
-  return render(request, 'teacherhome.html', context)
+  return render(request, 'teacherHome.html', context)
 
 # Draws the Student Home
 @login_required
@@ -600,7 +600,6 @@ def drawStudentPage(request):
   context['username'] = request.user.username
   context['class'] = studentClass
   context['messages'] = messages
-
 
   return render(request, "studentHome.html", context)
 
@@ -629,11 +628,14 @@ def profile(request, user_id):
   if user_type == "teacher":
     return teacherProfile(request, user_id)
 
-  elif (user_type == "solo") or (user_type == "student") :
-    return soloProfile(request, user_id)
+  elif user_type == "student" :
+    return studentProfile(request, user_id)
 
   elif (user_type == "class"):
     return classProfile(request, user_id)
+
+  elif user_type == "solo" :
+    return soloProfile(request, user_id)
 
   else:
     # Since this comes from a free-form URL, the non-existence of a user
@@ -673,6 +675,22 @@ def classProfile(request, user_id):
 
 
 
+
+  return render(request, "soloProfile.html", context)
+
+def studentProfile(request, user_id):
+  context = {}
+  user = User.objects.get(username=user_id)
+  user_profile = Student.objects.get(user=user)
+  portfolio = user_profile.portfolio
+  buy_list = portfolio.owned.all()
+  history = portfolio.history.all()
+  cash = portfolio.cash
+
+  context['username'] = user_id
+  context['portfolio'] = buy_list
+  context['pastPurchases'] = history
+  context['cash'] = cash
 
   return render(request, "soloProfile.html", context)
 

@@ -9,9 +9,16 @@
   <h2>Class Name: {{class}}</h2>
   <h2>Students</h2>
 
-  {% for s in students %}
-  <a href="{{s}}">{{s}}</a>
-  {% endfor %}
+  <table class="table">
+    <tbody>
+      {% for s in students %}
+      <tr>
+        <td><a href="{{s}}">{{s}}</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
 </div>
 {% endblock %}
 
