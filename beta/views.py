@@ -233,7 +233,7 @@ verify your email address and complete the registration of your account:
 
   send_mail(subject="Verify your Hustle Account",
               message= email_body,
-              from_email="aayusha+devnull@andrew.cmu.edu",
+              from_email="WallStreetCoders@myhustle.herokuapp.com",
               recipient_list=[new_user.email])
 
 
