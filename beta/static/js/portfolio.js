@@ -283,8 +283,6 @@ function updatePortfolioVal(idx){
 
   $(portfolio_row_id_hdr + idx + "-value").html(value);
   $(portfolio_row_id_hdr + idx + "-netPayoff").html(netPayoff);
-  
-  console.log("hidden field val " + $("#currPortfolio").val());
 }
 
 /* Reorders ID values of the porfolio table for all current objects

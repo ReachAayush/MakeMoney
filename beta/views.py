@@ -602,6 +602,7 @@ def drawStudentPage(request):
   context['class'] = studentClass
   context['portfolio'] = portfolio.owned.all()
   context['messages'] = messages
+  context['cash'] = portfolio.cash
 
 
   return render(request, "studentHome.html", context)
@@ -628,14 +629,8 @@ def profile(request, user_id):
   # get the user type, and call the appropriate method.
   user_type = userType(user_id)
 
-  if user_type == "teacher":
-    return teacherProfile(request, user_id)
-
-  elif user_type == "student" :
+  if user_type == "student" :
     return studentProfile(request, user_id)
-
-  elif (user_type == "class"):
-    return classProfile(request, user_id)
 
   elif user_type == "solo" :
     return soloProfile(request, user_id)
@@ -663,23 +658,6 @@ def soloProfile(request, user_id):
 
   return render(request, "soloProfile.html", context)
 
-def teacherProfile(request, user_id):
-  context = {}
-  user = User.objects.get(username=user_id)
-
-
-  context['username'] = user_id
-
-
-  return render(request, "soloProfile.html", context)
-
-def classProfile(request, user_id):
-  context = {}
-
-
-
-
-  return render(request, "soloProfile.html", context)
 
 def studentProfile(request, user_id):
   context = {}
