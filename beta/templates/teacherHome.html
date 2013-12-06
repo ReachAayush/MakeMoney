@@ -1,0 +1,49 @@
+
+{% extends "home-base.html" %}
+
+{% block heading %}{{username}}'s Teacher Page{% endblock %}
+
+{% block jumbotron %}
+<!-- Class Info -->
+<div class="page-header" id="portfolio">
+  <h2>Class Name: {{class}}</h2>
+  <h2>Students</h2>
+
+  {% for s in students %}
+  <a href="{{s}}">{{s}}</a>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% block outsideJumbotronInsideContainer %}
+<!-- Messaging Platform -->
+<div class="panel panel-default" id="messagingPlatform">
+  <div class="panel-heading">
+    <h3>Messaging</h3>
+  </div>
+
+  <div class="panel-body">
+    <h4>Send a mesage to your students:</h4>
+
+    <div class="input-group">
+      <span class="input-group-addon">{{username}}:</span>
+      <input id="messageInput" type="text" class="form-control" placeholder="Enter your message here...">
+    </div>
+
+    <br/>
+
+    <!-- Message Log -->
+    <h4>Message Log:</h4>
+    <table class="table" id="messageLog">
+      {% for m in messages %}
+      <tr>
+        <td>{{m.date}}</td>
+        <td>{{m.from}}</td>
+        <td>{{m.message}}</td>
+      </tr>
+      {% endfor %} 
+    </table>
+
+  </div>
+</div> <!-- /Messaging Platform -->
+{% endblock %}

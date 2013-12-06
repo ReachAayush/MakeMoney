@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png">
+
+    <title>{{username}}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="static/css/bootstrap.css" rel="stylesheet">
+    <link href="static/css/hustle.css" rel="stylesheet">
+    <link href="static/css/portfolio.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-default">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="portfolio">Hustle</a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li class="active"><a href="#">About</a></li>
+              <li><a href="#about">Settings</a></li>
+              <li><a href="resetPassword">Reset</a></li>
+              <li><a href="logOut">Log Out</a></li>
+            </ul>
+          </div>
+        </div>
+    </div> <!-- /navbar --> 
+    
+
+    <h1 class="text-center">{{username}}</h1>
+
+    <div class="container">
+
+     <!-- User Interface Window -->
+      <div class="jumbotron">
+
+        <div class="page-header" id="portfolio">
+          <!-- Portfolio Table -->
+          <h2>Current Portfolio</h2>
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th class="text-center">Ticker</th>
+                <th class="text-center">Company</th>
+                <th class="text-center">Date of Purchase</th>
+                <th class="text-center">Bought At</th>
+                <th class="text-center">Quantity</th>
+                <th class="text-center">Current Bid</th>
+                <th class="text-center">Value</th>
+                <th class="text-center">Net Payoff</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="portfolioBody">
+        
+              {% if portfolio|length == 0 %}
+              <!-- FIX THIS -->
+              <!-- <tr>
+                <td class="text-center text-danger" colspan="9">You don't own any stocks right now. Buy some from the marketplace!</td>
+              </tr> -->
+              {% endif %}
+
+              {% for item in portfolio %}
+              <tr title="{{item.tickerSymbol}}" id="portfolio-row{{forloop.counter0}}">
+                <td class="text-center">{{item.tickerSymbol}}</td>
+                <td class="text-center">{{item.companyName}}</td>
+                <td class="text-center">{{item.date}}</td>
+                <td class="text-center" id="portfolio-row{{forloop.counter0}}-boughtAt">{{item.boughtAt}}</td>
+                <td class="text-center" id="portfolio-row{{forloop.counter0}}-quantity">{{item.quantity}}</td>
+                <td class="text-center" id="portfolio-row{{forloop.counter0}}-currentBid">0</td>
+                <td class="text-center" id="portfolio-row{{forloop.counter0}}-value"></td>
+                <td class="text-center" id="portfolio-row{{forloop.counter0}}-netPayoff"></td>
+                <td class="text-center">
+                  <button class='btn btn-default' onclick="sell({{forloop.counter0}})">Sell</button>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          <!-- Portfolio Val and Cash on Hand -->
+          <div class="row">
+            <div class="col-sm-3">
+              <h3 class="text-right">Portfolio Value</h3>
+            </div>
+            <div class="col-sm-3">
+              <h3 id="portfolioValue" class="text-left text-success">TBD</h3>
+            </div>
+
+            <div class="col-sm-3">
+              <h3 class="text-right">Cash on Hand</h3>
+            </div>
+            <div class="col-sm-3">
+              <h3 id="cashOnHand" class="text-left text-success">${{cash}}</h3>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Past Purchases Table -->
+      <div class="page-header">
+        <div class="row">
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              <h3 class="panel-title">Past Purchases</h3>
+            </div>
+            <div class="panel-body">
+              
+              <table class='table table-bordered table-hover'>
+                <thead>
+                  <tr>
+                  {% for h in pastPurchasesTable.head %}
+                  <th class="text-center">{{h}}</th>
+                  {% endfor %}
+                  <th></th> <!-- impl buttons -->
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {% for r in pastPurchasesTable.body %}
+                    <tr>
+                      {% for c in r %}
+                      <td class="text-center">{{c}}</td>
+                      {% endfor %}
+                      <td class="text-center">
+                        <div class="btn-group">
+                        <button class="btn btn-warning">Long</button>
+                        <button class="btn btn-info">Short</button>
+                      </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+            </div>
+          </div>
+      </div>
+      </div>
+
+
+
+    </div> <!-- /container -->
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js" type="text/javascript"></script> 
+    <script src="static/js/jquery.cookie.js"></script>
+	<script src="static/js/highstock.js"></script>
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script src="static/js/MarkitTimeseriesService.js"></script>
+	<script src="static/js/MarkitQuoteService.js"></script>
+	
+    <script src="static/js/portfolio.js"></script>
+    <script type="text/javascript">
+   </script>
+ </body>
+</html>

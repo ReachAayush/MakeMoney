@@ -1,0 +1,38 @@
+{% extends "reg-base.html" %}
+
+{% block title %}Hustle: Sign In{% endblock %}
+
+{% block jumbotron %}
+<!-- Title -->
+<h1 onclick="location.href='about'" class="text-center">Hustle</h1>
+<p class="lead text-center">Can you <strong>Hustle</strong> your way through the Stock Market?</p>
+
+<!-- Errors -->
+<div class="row">
+  {% for m in messages %}
+  <div class="text-success">
+    {{m}}
+  </div>
+  {% endfor %}
+
+  {% for err in errors %}
+  <div class="text-danger"><small><strong>Error:</strong> {{err}}</small></div>
+  {% endfor %}
+</div> <!-- /Errors -->
+
+<div class="row">
+  <form class="form-signin" role="form" action="signin" name="login-form" method="post">
+
+    <h2 class="form-signin-heading">Sign In</h2>
+
+    <input class="form-control" type="text" name="username" placeholder="Username..." required autofocus>
+    <input class="form-control" type="password" name="pwd" placeholder="Password..." required>
+    <h5 id="frgt" class="text-left" onclick="location.href='forgotPassword'">Forgot Password?</h5>
+
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    {% csrf_token %}
+
+    <button onclick="location.href='register'" class="btn btn-sm btn-block">Register</button>
+  </form>   
+</div>
+{% endblock %}
