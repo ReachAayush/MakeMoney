@@ -178,6 +178,14 @@ class ClassRegistrationForm(forms.Form):
     elif User.objects.filter(email__exact=email):
       raise forms.ValidationError("Email is already registered with another account.")
 
+    className = cleaned_data.get('classname')
+
+    if className is None or not className:
+      raise forms.ValidationError("Enter a valid class name.")
+    elif MyClass.objects.filter(className__exact=className):
+      raise forms.ValidationError("Class Name is already taken.")
+
+
     cash_value = cleaned_data.get('cashValue')
     if cash_value is None or not cash_value:
       raise forms.ValidationError("Please enter a valid cash value.")
