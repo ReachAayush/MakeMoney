@@ -682,9 +682,6 @@ def buy(request):
   # theres some way to tell if short/long
   cost = price * quant
 
-  if(cost > myProfile.portfolio.cash):
-  	return redirect('/')
-
   new_buy = Buy(tickerSymbol=stock, companyName=nm,
    date=now, boughtAt=price, \
    quantity=quant, user=me)

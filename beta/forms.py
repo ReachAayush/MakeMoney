@@ -281,15 +281,27 @@ class StudentRegistrationForm(forms.Form):
 class ResetPasswordForm(forms.Form):
     oldPassword = forms.CharField(max_length = 200, 
                                 label='Current Password', 
-                                widget = forms.PasswordInput())
+                                widget = forms.PasswordInput(attrs={
+                                  'class':'form-control',
+                                  'placeholder':'Old Password..',
+                                  'required':'on'
+                                  }))
 
     password1 = forms.CharField(max_length = 200, 
                                 label='New Password', 
-                                widget = forms.PasswordInput())
+                                widget = forms.PasswordInput(attrs={
+                                  'class':'form-control',
+                                  'placeholder':'New Password..',
+                                  'required':'on'
+                                  }))
 
     password2 = forms.CharField(max_length = 200, 
                                 label='Confirm New password',  
-                                widget = forms.PasswordInput())
+                                widget = forms.PasswordInput(attrs={
+                                  'class':'form-control',
+                                  'placeholder':'Confirm New Password..',
+                                  'required':'on'
+                                  }))
 
 
     # Customizes form validation for properties that apply to more
@@ -309,35 +321,3 @@ class ResetPasswordForm(forms.Form):
 
         # We must return the cleaned data we got from our parent.
         return cleaned_data
-
-
-# - PORTFOLIO FORMS -
-
-# # Buy Form
-# class BuyForm(forms.Form):
-#   stock = forms.CharField(max_length=5)
-#   quantity = forms.IntegerField(initial=0)
-
-#   def clean(self):
-#     cleaned_data = super(BuyForm, self).clean()
-#     stock = cleaned_data.get('stock')
-#     quantity = cleaned_data.get('quantity')
-#     if stock and quantity and quantity > 0 and stock.length() < 5:
-#       raise forms.ValidationError("something is wrong here....")
-#     return cleaned_data
-
-# # Sell Form
-# class SellForm(forms.Form):
-#   stock = forms.CharField(max_length=5)
-#   quantity = forms.IntegerField(initial=0)
-
-#   def clean(self):
-#     cleaned_data = super(SellForm, self).clean()
-#     stock = cleaned_data.get('stock')
-#     quantity = cleaned_data.get('quantity')
-    
-#     if stock and quantity and quantity > 0 and stock.length() < 7:
-#       raise forms.ValidationError("something is wrong here....")
-  
-#     return cleaned_data
-

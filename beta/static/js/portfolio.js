@@ -356,7 +356,7 @@ function addSearchResultToMarketplaceTable(data) {
     var shares = $("<td title='quant'><input type='text' class='marketplaceResultQuant' name='quant', value='10'></td>");
     var buyBtn = $("<td class='text-center'><button class='btn btn-success' \
       onclick='buy(\"" + id + "\")'>Buy</button></td>");
-    var closeBtn = $("<td class='text-center'><button type='button' class='close' aria-hidden='true'>&times;</button></td>");
+    // var closeBtn = $("<td class='text-center'><button type='button' class='close' aria-hidden='true'>&times;</button></td>");
       
  	row.append(name);
     row.append(company);
@@ -365,7 +365,7 @@ function addSearchResultToMarketplaceTable(data) {
     row.append(ask);
     row.append(shares);
     row.append(buyBtn);
-    row.append(closeBtn);
+    // row.append(closeBtn);
 
     $(MARKETPLACE).append(row);
     

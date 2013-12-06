@@ -62,7 +62,7 @@
             <p class="text-center">Join a class and learn how to invest well</p>
             <form class="form-signin" role="form" action="{{forms.student.method}}" name="register-form" method="post">
               {% for field in forms.student.form.visible_fields %}
-                {{field}}{{field.error}}
+                {{field}}
               {% endfor %}
               <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
               {% csrf_token %}
@@ -88,9 +88,6 @@
             <p class="text-center">Start your own portfolio and see how you'd compare in the market</p>
 
             <form class="form-signin" role="form" action="{{forms.solo.method}}" name="register-form" method="post">
-
-              
-
               {% for field in forms.solo.form %}
               {{field}}
               {% endfor %}
