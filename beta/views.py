@@ -201,24 +201,43 @@ def myLogin(request):
 # Handles Reset Password method
 @login_required
 def resetPassword(request):
+  print "--resetPassword"
+
+  context = {}
+  errors = []
+  context['errors'] = errors
+  context['username'] = request.user.username
+
   if request.method == 'GET':
-    context = {}
     form = ResetPasswordForm()
     context['form'] = form
-    context['username'] = request.user.username
+    
     return render(request, 'resetPassword.html', context)
-  else:
+
+  else: # request.method == POST
     form = ResetPasswordForm(request.POST, request.FILES)
-    me = getUserProfile(request.user) # FIXME
+    context['form'] = form
+    me = request.user
+    print "me = ", me
+
     if form.is_valid():
       oldPass = form.cleaned_data.get('oldPassword')
       newPass = form.cleaned_data.get('password1')
-      if me.user.check_password(oldPass):
-        me.user.set_password(newPass)
+      
+      print "oldPass = ", oldPass
+
+      if me.check_password(oldPass):
+        print "got here"
+        me.set_password(newPass)
         me.is_active = True
-        me.user.save()
-      return redirect('/')
-    return redirect('resetPassword')
+        me.save()
+        return redirect('/')
+      else:
+        print "ohno"
+        errors.append("Passoword is incorrect.")
+        return render(request, 'resetPassword.html', context)
+
+    return render(request, 'resetPassword.html', context)
 
 # handles Forgot Password Method
 def forgotPassword(request):
