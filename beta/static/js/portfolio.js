@@ -140,9 +140,21 @@ function buy(rowID) {
   }
   });
 
+  var quant = backendObj['quant']
+  var price = backendObj['ask']
+  var currCash = parseInt($(CASH_ON_HAND).text().substring(1))
+
+  console.log("currCash = ", currCash);
+  
   // negative values are not allowed, so just throw an alert then.
-  if ((backendObj['quant']) < 0) {
+  if (quant < 0) {
     alert("You cannot buy a negative number of stocks.");
+    return;
+  }
+
+  // neither is buying more than you can possible buy allowed
+  if ((price * quant) > currCash) {
+    alert("Yoy cannot afford this transaction.");
     return;
   }
 
