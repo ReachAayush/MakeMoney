@@ -152,7 +152,7 @@ function buy(rowID) {
 
   // neither is buying more than you can possible buy allowed
   if ((price * quant) > currCash) {
-    alert("Yoy cannot afford this transaction.");
+    alert("You cannot afford this transaction.");
     return;
   }
 
