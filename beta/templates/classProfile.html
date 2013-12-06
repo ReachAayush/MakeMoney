@@ -1,26 +1,9 @@
-{% extends "home-base.html" %}
-
-{% block heading %}{{username}}'s Hustle{% endblock %}
+{% extends "profile-base.html" %}
 
 {% block jumbotron %}
-<div class="page-header" id="graph">
-  <h3>Graph<small id="graph-loading"></small></h3>
-  <!-- Search Bar for Graph-->
-  <input id="stockTickerQueryGraphInput" type="text" class="form-control" placeholder="Find a stock graph. Enter a ticker name (like GOOG, AMZN)">
-  <button class="btn btn-primary" id="stockTickerQueryGraphInput1">Candlestick</button>
-  <button class="btn btn-primary" id="stockTickerQueryGraphInput2">Area</button>
-  <button class="btn btn-primary" id="stockTickerQueryGraphInput3">Compare Stocks</button>
-  <!--button class='btn btn-success' onclick='#stockTickerQuery"'>Buy</button-->
-  <!--Stock Chart-->
-  <div class="input-group col-md-12" id="stockTickerQueryGraph1"></div>
-  <div class="input-group col-md-10" id="stockTickerQueryGraph2"></div>
-  <div class="input-group col-md-10" id="stockTickerQueryGraph3"></div>
-</div>
-
 <div class="page-header" id="portfolio">
-
   <!-- Portfolio Table -->
-  <h2>Portfolio</h2>
+  <h2>Current Portfolio</h2>
   <table class="table table-bordered table-hover">
     <thead>
       <tr>
@@ -36,6 +19,7 @@
       </tr>
     </thead>
     <tbody id="portfolioBody">
+
       {% if portfolio|length == 0 %}
       <!-- FIX THIS -->
               <!-- <tr>
@@ -81,37 +65,43 @@
         {% endblock %}
 
         {% block outsideJumbotronInsideContainer %}
-        <!-- Marketplace -->
+        <!-- Past Purchases Table -->
         <div class="page-header">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">Marketplace</h3>
-            </div>
-            <div class="panel-body">
-
-              <!-- Search Bar -->
-              <div class="input-group">
-                <span class="input-group-addon">Tickr</span>
-                <input id="stockTickerQuery" type="text" class="form-control" placeholder="Enter a ticker name (like GOOG, AMZN)">
+          <div class="row">
+            <div class="panel panel-info">
+              <div class="panel-heading">
+                <h3 class="panel-title">Past Purchases</h3>
               </div>
+              <div class="panel-body">
 
-              <!-- Marketplace Table -->
-              <table class="table table-bordered table-hover">
-                <thead>
-                  <tr>
-                    <th class="text-center">Ticker</th>
-                    <th class="text-center">Company</th>
-                    <th class="text-center">Exchange</th>
-                    <th class="text-center">Bid</th>
-                    <th class="text-center">Ask</th>
-                    <th class="text-center">Quantity</th>
-                    <th class="text-center">Action</th>
-                  </tr>
-                </thead>
+                <table class='table table-bordered table-hover'>
+                  <thead>
+                    <tr>
+                      <th class="text-center">Date</th>
+                      <th class="text-center">Ticker</th>
+                      <th class="text-center">Bought At</th>
+                      <th class="text-center">Quantity</th>
+                      <th class="text-center">Sold At</th>
+                      <th class="text-center">Net Profit</th>
+                    </tr>
+                  </thead>
 
-                <tbody id="marketplaceBody">
-                </tbody>
-              </table>
+                  <tbody>
+                    {% for p in pastPurchases %}
+                    <tr>
+                      <td class="text-center">{{p.date}}</td>
+                      <td class="text-center">{{p.tickerSymbol}}</td>
+                      <td class="text-center">{{p.boughtAt}}</td>
+                      <td class="text-center">{{p.quantity}}</td>
+                      <td class="text-center">{{p.soldAt}}</td>
+                      <td class="text-center">{{p.netProfit}}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+
+              </div>
             </div>
           </div>
-          {% endblock %}
+        </div>
+        {% endblock %}

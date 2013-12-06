@@ -1,28 +1,28 @@
+# --- MODELS.py ---
+# Models used to maintain databases for Hustle.
+# Principal Developer: Aayush Agarwal
+# Secondary Developer: Rishabh A Singh
+# -----------------
+
+# -- IMPORTS --
 from django.db import models
 import datetime
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
-#from PIL import Image
+from PIL import Image
 
-# Solo User
-class UserProfile(models.Model):
-    user = models.ForeignKey(User)
-    portfolio = models.OneToOneField("Portfolio")
+# -- MODELS --
 
-    def __unicode__(self):
-    	return self.user.username
+# - USER MODEL HELPERS -
 
-User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
-
-# Student
-class Student(models.Model):
-    user = models.ForeignKey(User)
-    portfolio = models.OneToOneField("Portfolio")
-    classAttending = models.OneToOneField("MyClass")
+# Portfolio of a given User
+class Portfolio(models.Model):
+    owned = models.ManyToManyField("Buy")
+    history = models.ManyToManyField("Sell")
+    cash = models.IntegerField()
 
     def __unicode__(self):
-        return self.user.username
-
+        return str(self.cash)
 
 # Messaging for Class
 class Message(models.Model):
@@ -36,7 +36,30 @@ class Message(models.Model):
     def __unicode__(self):
         return self.message
 
-# Class
+
+
+# - USER MODELS -
+
+# Solo Hustle User (Hustlr)
+class UserProfile(models.Model):
+    user = models.ForeignKey(User)
+    portfolio = models.OneToOneField("Portfolio")
+
+    def __unicode__(self):
+    	return self.user.username
+
+User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
+
+# Student User
+class Student(models.Model):
+    user = models.ForeignKey(User)
+    portfolio = models.OneToOneField("Portfolio")
+    classAttending = models.OneToOneField("MyClass")
+
+    def __unicode__(self):
+        return self.user.username
+
+# Class (Made inside teacher form)
 class MyClass(models.Model):
     className = models.CharField(max_length=50)
     teacher = models.ForeignKey(User)
@@ -73,15 +96,10 @@ class MyClass(models.Model):
         return map(msg_json, allMsgObjs)
 
     def __unicode__(self):
-        return "Class: " + self.className + ", Teacher: " + self.teacher.username
+        return self.className
 
-# Portfolio of a given User
-class Portfolio(models.Model):
-    owned = models.ManyToManyField("Buy")
-    history = models.ManyToManyField("Sell")
-    cash = models.IntegerField()
-    def __unicode__(self):
-        return str(self.cash)
+
+# - PORTFOLIO MODELS -
 
 # Buy Instance
 class Buy(models.Model):
@@ -95,17 +113,23 @@ class Buy(models.Model):
         quantity = self.quantity
         tickerSymbol = self.tickerSymbol
         boughtAt = self.boughtAt
-        return "Bought " + str(quantity) + " stock(s) of " + tickerSymbol + " at the price of " + str(boughtAt)
+        return "Bought " + str(quantity) + " stock(s) of " + \
+         tickerSymbol + " at the price of " + str(boughtAt)
 
 # Sell Instance
 class Sell(models.Model):
-    tickerSymbol = models.CharField(max_length=5)
-    soldAt = models.IntegerField(blank=False)
-    quantity = models.IntegerField(blank=True)
-    user = models.ForeignKey(User)
     date = models.DateField(auto_now=True)
+    tickerSymbol = models.CharField(max_length=5)
+    boughtAt = models.IntegerField(blank=False)
+    quantity = models.IntegerField(blank=True)
+    soldAt = models.IntegerField(blank=False)
+    netProfit = models.IntegerField(blank=False)
+    
+    user = models.ForeignKey(User)
+    
     def __unicode__(self):
         quantity = self.quantity
         tickerSymbol = self.tickerSymbol
         soldAt = self.soldAt
-        return "Sold " + str(quantity) + " stock(s) of " + tickerSymbol + " at the price of " + str(soldAt)
+        return "Sold " + str(quantity) + " stock(s) of " + tickerSymbol + \
+         " at the price of " + str(soldAt)

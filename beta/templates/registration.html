@@ -33,8 +33,16 @@
         </div>
         {% endfor %}
 
-        {% for err in errors %}
-        <div class="text-danger"><small><strong>Error:</strong> {{err}}</small></div>
+        {% for err in forms.student.form.non_field_errors %}
+          <div class="text-danger"><small><strong>Error(Student):</strong> {{err}}</small></div>
+        {% endfor %}
+
+        {% for err in forms.teacher.form.non_field_errors %}
+            <div class="text-danger"><small><strong>Error(Class):</strong> {{err}}</small></div>
+        {% endfor %}
+
+        {% for err in forms.solo.form.non_field_errors %}
+          <div class="text-danger"><small><strong>Error(Solo):</strong> {{err}}</small></div>
         {% endfor %}
       </div> <!-- /Errors -->
 
@@ -53,8 +61,8 @@
             <!-- Student Registration  -->
             <p class="text-center">Join a class and learn how to invest well</p>
             <form class="form-signin" role="form" action="{{forms.student.method}}" name="register-form" method="post">
-              {% for field in forms.student.form %}
-              {{field}} {{field.error}}
+              {% for field in forms.student.form.visible_fields %}
+                {{field}}{{field.error}}
               {% endfor %}
               <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
               {% csrf_token %}
@@ -66,7 +74,7 @@
             <p class="text-center">Teach a class on how to invest</p>
             <form class="form-signin" role="form" action="{{forms.teacher.method}}" name="register-form" method="post">
               {% for field in forms.teacher.form %}
-              {{field}} {{field.error}}
+              {{field}}
               {% endfor %}
               <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
               {% csrf_token %}
@@ -76,10 +84,15 @@
 
           <div class="tab-pane fade in active" id="solo">
             <!-- Solo Registration -->
+
             <p class="text-center">Start your own portfolio and see how you'd compare in the market</p>
+
             <form class="form-signin" role="form" action="{{forms.solo.method}}" name="register-form" method="post">
+
+              
+
               {% for field in forms.solo.form %}
-              {{field}} {{field.error}}
+              {{field}}
               {% endfor %}
               <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
               {% csrf_token %}
