@@ -143,8 +143,6 @@ function buy(rowID) {
   var quant = backendObj['quant']
   var price = backendObj['ask']
   var currCash = parseInt($(CASH_ON_HAND).text().substring(1))
-
-  console.log("currCash = ", currCash);
   
   // negative values are not allowed, so just throw an alert then.
   if (quant < 0) {
@@ -311,7 +309,6 @@ function reorderPortfolioRows(){
     $(children[7]).attr("id", new_row_id + "-netPayoff");
 
     var sellbtn = $(children[8]).children()[0];
-    console.log("btn = ", sellbtn);
     $(sellbtn).attr("onclick", "sell('" + i + "')");
   });
 }
@@ -443,7 +440,6 @@ $(MESSAGE_USR_INPUT).keyup(function(e){
 
       success: function(data) {
         // message is stored in the db, so add it here.
-        console.log("--entered success function!");
 
         // value of rows is also the next index, so add to that point
         var new_row = $("<tr></tr>");
