@@ -53,7 +53,7 @@ User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
 class Student(models.Model):
     user = models.ForeignKey(User)
     portfolio = models.OneToOneField("Portfolio")
-    classAttending = models.OneToOneField("MyClass")
+    classAttending = models.ForeignKey("MyClass")
 
     def __unicode__(self):
         return self.user.username
