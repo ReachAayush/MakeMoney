@@ -256,7 +256,7 @@ def forgotPassword(request):
     me = User.objects.filter(email__exact=myEmail)
     if not me:
       return redirect('forgotPassword')
-    user = me[0]
+    me = me[0]
     token = default_token_generator.make_token(user)
     newPass = str(random.randrange(1000, 9999, 1))
     me.set_password(newPass)
